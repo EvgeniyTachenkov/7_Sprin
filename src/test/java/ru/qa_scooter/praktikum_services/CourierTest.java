@@ -48,17 +48,12 @@ public class CourierTest {
     @Test
     @DisplayName("The courier cannot be registered")
     @Description("Service return 400 bad request,when client create courier with double login")
-    //Баг с текстом ошибки.
     public void createDoubleCourierTest(){
         courier = GenerationCourier.getRandomCourier();
         ValidatableResponse response = CourierClient.create(courier);
         response.statusCode(SC_CREATED);
         boolean isOk = response.extract().path("ok");
         assertTrue(isOk);
-
-        ValidatableResponse loginResponse = CourierClient.loginCourier(LoginCourier.from(courier));
-        courierId = loginResponse.extract().path("id");
-        assertNotNull(courierId);
 
         ValidatableResponse doubleResponse = CourierClient.create(courier);
         doubleResponse.statusCode(SC_CONFLICT).and().assertThat().body("message", is(CONFLICT_MESSAGE));
